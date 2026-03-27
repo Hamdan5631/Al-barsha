@@ -1,17 +1,45 @@
+@php
+    $fontArabicRegular = str_replace('\\', '/', storage_path('fonts/NotoSansArabic-Regular.ttf'));
+    $fontArabicBold = str_replace('\\', '/', storage_path('fonts/NotoSansArabic-Bold.ttf'));
+    $invoiceHeaderImage = str_replace('\\', '/', public_path('barshalogo.jpeg'));
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Invoice {{ $invoice->invoice_number }}</title>
     <style>
         /* Colours from AL BARSHA.pdf: body text rgb(24,66,114) #184272; muted fill #bfc0bf (PyMuPDF) */
+        @font-face {
+            font-family: 'NotoSansArabic';
+            font-style: normal;
+            font-weight: normal;
+            src: url('{{ $fontArabicRegular }}') format('truetype');
+        }
+        @font-face {
+            font-family: 'NotoSansArabic';
+            font-style: normal;
+            font-weight: bold;
+            src: url('{{ $fontArabicBold }}') format('truetype');
+        }
         @page { margin: 10mm 10mm 12mm; }
         * { box-sizing: border-box; }
+        html, body {
+            border: 0 !important;
+            outline: none !important;
+        }
+        img {
+            border: 0 !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
         :root {
             --pdf-navy: #184272;
             --pdf-muted: #bfc0bf;
             --pdf-border: #bfc0bf;
-            --pdf-pale: #f1f2f1;
+            --pdf-pale: #e8e9e8;
+            --font-ar: 'NotoSansArabic', 'DejaVu Sans', sans-serif;
         }
         body {
             font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
@@ -30,94 +58,50 @@
             font-family: DejaVu Serif, Georgia, serif;
             font-size: 100px;
             font-style: italic;
-            color: var(--pdf-navy);
-            opacity: 0.18;
+            color: #c5cad1;
+            opacity: 0.35;
             z-index: 0;
             pointer-events: none;
         }
         .page-wrap { position: relative; z-index: 1; }
 
-        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-        .header-table td { vertical-align: top; padding: 0; }
+        .document-frame {
+            border: 0 !important;
+            outline: none !important;
+        }
 
-        .logo-cell { width: 16%; padding-right: 6px; }
-        .logo-ring {
-            width: 56px;
-            height: 56px;
-            border: 2.5px solid var(--pdf-navy);
-            border-radius: 50%;
+        .invoice-header {
+            width: 100%;
+            margin: 0;
+            padding: 4px 0 2px;
             text-align: center;
-            line-height: 50px;
-            font-family: DejaVu Serif, Georgia, serif;
-            font-size: 15px;
-            font-style: italic;
-            font-weight: bold;
-            color: var(--pdf-navy);
+            background: #fff;
+            border: 0 !important;
+            outline: none !important;
+            overflow: hidden;
         }
-
-        .brand-cell { width: 46%; padding-top: 2px; }
-        .brand-name {
-            font-family: DejaVu Serif, Georgia, serif;
-            font-size: 22px;
-            font-weight: bold;
-            color: var(--pdf-navy);
-            letter-spacing: 0.5px;
-            line-height: 1.1;
+        .invoice-header-img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0;
+            padding: 0;
+            border: 0 !important;
+            outline: none !important;
+            vertical-align: top;
+            object-fit: contain;
         }
-        .brand-sub {
-            font-size: 8.5px;
-            font-weight: bold;
-            color: var(--pdf-navy);
-            letter-spacing: 0.6px;
-            margin-top: 2px;
-        }
-        .brand-ar {
-            font-size: 9px;
-            direction: rtl;
-            color: var(--pdf-navy);
-            margin-top: 4px;
-            line-height: 1.35;
-        }
-
-        .title-cell { width: 38%; text-align: right; padding-left: 4px; }
-        .ar-banner {
-            background: var(--pdf-navy);
-            color: #fff;
-            padding: 8px 10px 8px 16px;
-            text-align: right;
-            margin-bottom: 6px;
-        }
-        .ar-banner-text {
-            font-size: 9px;
-            direction: rtl;
-            line-height: 1.4;
-        }
-        .invoice-en {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--pdf-navy);
-            letter-spacing: 1px;
-        }
-        .invoice-ar {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--pdf-navy);
-            direction: rtl;
-            margin-top: 2px;
-        }
-
-        .meta-box {
-            border: 1px solid var(--pdf-navy);
+        .meta-strip {
             background: var(--pdf-pale);
-            padding: 8px 10px;
-            margin-bottom: 0;
+            padding: 8px 10px 10px;
         }
         .meta-inner { width: 100%; border-collapse: collapse; }
-        .meta-inner td { vertical-align: top; padding: 2px 4px; }
+        .meta-inner td { vertical-align: middle; padding: 0; }
+        .meta-inner tr + tr td { padding-top: 6px; }
         .meta-label { font-weight: bold; color: var(--pdf-navy); }
-        .meta-to { width: 52%; }
-
-        .items-wrap { border: 1px solid var(--pdf-navy); border-top: none; }
+        .meta-to-val { padding-left: 4px; }
+        .meta-right { text-align: right; white-space: nowrap; }
 
         .items-table {
             width: 100%;
@@ -129,30 +113,33 @@
             padding: 4px 3px;
             vertical-align: middle;
         }
-        .items-table thead tr.head-main th {
-            background: var(--pdf-navy);
-            color: #fff;
+        .items-table thead th {
+            background-color: #184272 !important;
+            color: #ffffff !important;
             font-weight: bold;
+            border: 1px solid #ffffff;
+            padding: 5px 4px;
+            vertical-align: middle;
             text-align: center;
-            border-color: var(--pdf-navy);
-            padding: 5px 2px;
+        }
+        /* DomPDF: avoid nested tables & display:block in th — use <br> + inline spans */
+        .items-table thead .th-ar {
+            font-family: var(--font-ar);
+            font-size: 8px;
+            color: #ffffff !important;
+            font-weight: bold;
+        }
+        .items-table thead .th-en {
+            font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
+            font-size: 7.5px;
+            color: #ffffff !important;
+            font-weight: bold;
         }
         .items-table thead tr.head-sub th {
-            background: var(--pdf-navy);
-            color: #fff;
             font-size: 7.5px;
             text-align: center;
-            border-color: var(--pdf-navy);
-            padding: 3px 2px;
-        }
-        .items-table thead tr.head-ar th {
-            background: var(--pdf-navy);
-            color: #fff;
-            font-size: 7.5px;
-            direction: rtl;
-            text-align: center;
-            border-color: var(--pdf-navy);
-            padding: 3px 2px;
+            padding: 4px 2px;
+            color: #ffffff !important;
         }
         .items-table tbody td {
             text-align: center;
@@ -177,41 +164,48 @@
         .col-fils { width: 9%; }
 
         .words-box {
-            border: 1px solid var(--pdf-border);
-            border-top: none;
-            background: #fafafa;
-            padding: 6px 10px;
+            background: var(--pdf-pale);
+            padding: 7px 10px;
         }
         .words-row { width: 100%; border-collapse: collapse; }
         .words-row td { vertical-align: top; padding: 2px 0; }
         .words-label { font-weight: bold; width: 22%; color: var(--pdf-navy); }
         .words-val { font-style: italic; font-size: 8.5px; }
 
-        .sig-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
-        .sig-table td { vertical-align: bottom; padding: 4px 6px; width: 50%; }
+        .sig-table { width: 100%; border-collapse: collapse; margin-top: 12px; padding: 0 8px 10px; }
+        .sig-table td { vertical-align: bottom; padding: 4px 2px; width: 50%; }
         .sig-left {
-            font-family: DejaVu Serif, Georgia, serif;
+            font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
             font-size: 9px;
+            font-weight: bold;
             color: var(--pdf-navy);
         }
+        .sig-left .staff-name {
+            font-weight: normal;
+            display: inline-block;
+            margin-top: 4px;
+        }
         .sig-right {
-            font-family: DejaVu Serif, Georgia, serif;
+            font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
             font-size: 9px;
             font-weight: bold;
             color: var(--pdf-navy);
             text-align: right;
         }
-        .staff-sig { margin-top: 6px; text-align: right; }
+        .staff-sig { margin-top: 6px; }
+        .sig-left .staff-sig { text-align: left; }
+        .sig-right .staff-sig { text-align: right; }
         .staff-sig img { max-width: 120px; height: auto; }
 
         .footer-bar {
-            margin-top: 16px;
+            margin-top: 0;
             background: var(--pdf-navy);
             color: #fff;
             text-align: center;
-            padding: 8px 10px;
+            padding: 9px 12px 10px;
             font-size: 8.5px;
-            line-height: 1.5;
+            line-height: 1.55;
+            font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
         }
         .footer-bar a { color: #fff; text-decoration: none; }
     </style>
@@ -227,39 +221,29 @@
 <div class="watermark">Bdt</div>
 <div class="page-wrap">
 
-<table class="header-table">
-    <tr>
-        <td class="logo-cell">
-            <div class="logo-ring">Bdt</div>
-        </td>
-        <td class="brand-cell">
-            <div class="brand-name">AL BARSHA</div>
-            <div class="brand-sub">DOCUMENTS TYPING &amp; COPYING</div>
-            {{-- Exact Arabic line from PDF (combined company line under English) --}}
-            <div class="brand-ar">اﻟﺒﺮﺷﺎ ﻟﻄﺒﺎﻋﺔ وﺗﺼﻮﻳﺮ اﻟﻤﺴﺘﻨﺪات</div>
-        </td>
-        <td class="title-cell">
-            <div class="ar-banner">
-                <div class="ar-banner-text">اﻟﺒﺮﺷﺎ</div>
-                <div class="ar-banner-text">ﻟﻄﺒﺎﻋﺔ وﺗﺼﻮﻳﺮ اﻟﻤﺴﺘﻨﺪات</div>
-            </div>
-            <div class="invoice-en">INVOICE</div>
-            {{-- Exact Arabic title from PDF (ﻓﺎﺗﻮﺭﺓ with tatweel stretch) --}}
-            <div class="invoice-ar">ﻓﺎﺗــــــــﻮرة</div>
-        </td>
-    </tr>
-</table>
+<div class="document-frame">
 
-<div class="meta-box">
+@if(file_exists(public_path('barshalogo.jpeg')))
+<div class="invoice-header">
+    <img src="{{ $invoiceHeaderImage }}" alt="AL BARSHA DOCUMENTS TYPING &amp; COPYING" class="invoice-header-img">
+</div>
+@else
+<div class="invoice-header" style="font-weight:bold;font-size:11px;color:#184272;padding:8px;">AL BARSHA DOCUMENTS TYPING &amp; COPYING</div>
+@endif
+
+<div class="meta-strip">
     <table class="meta-inner">
         <tr>
-            <td class="meta-to">
-                <span class="meta-label">To:</span>
-                {{ $invoice->customer_name }}
+            <td colspan="2">
+                <span class="meta-label">To:</span><span class="meta-to-val">{{ $invoice->customer_name }}</span>
             </td>
-            <td style="text-align: right;">
+        </tr>
+        <tr>
+            <td>
                 <span class="meta-label">Invoice No:</span>
-                {{ $invoice->invoice_number }}<br>
+                {{ $invoice->invoice_number }}
+            </td>
+            <td class="meta-right">
                 <span class="meta-label">Date:</span>
                 {{ $invoiceDate }}
             </td>
@@ -270,24 +254,31 @@
 <div class="items-wrap">
 <table class="items-table">
     <thead>
-    <tr class="head-main">
-        <th rowspan="2" class="col-sl">Sl No.</th>
-        <th rowspan="2" class="col-desc">Description</th>
-        <th rowspan="2" class="col-qty">Qty.</th>
-        <th rowspan="2" colspan="2">Unit Price<br>(AED)</th>
-        <th colspan="2">Amount</th>
+    <tr>
+        <th rowspan="2" class="col-sl">
+            <span class="th-ar" dir="rtl">الرقم</span><br>
+            <span class="th-en">SI No.</span>
+        </th>
+        <th rowspan="2" class="col-desc">
+            <span class="th-ar" dir="rtl">التفاصيل</span><br>
+            <span class="th-en">Description</span>
+        </th>
+        <th rowspan="2" class="col-qty">
+            <span class="th-ar" dir="rtl">الكمية</span><br>
+            <span class="th-en">Qty.</span>
+        </th>
+        <th rowspan="2" class="col-unit">
+            <span class="th-ar" dir="rtl">سعر الوحدة</span><br>
+            <span class="th-en">Unit Price (AED)</span>
+        </th>
+        <th colspan="2">
+            <span class="th-ar" dir="rtl">المبلغ</span><br>
+            <span class="th-en">Amount</span>
+        </th>
     </tr>
     <tr class="head-sub">
         <th class="col-dhs">Dhs.</th>
         <th class="col-fils">Fils</th>
-    </tr>
-    <tr class="head-ar">
-        <th class="col-sl">اﻟﺮﻗﻢ</th>
-        <th class="col-desc">اﻟﺘـﻔـﺎﺻـﻴـﻞ</th>
-        <th class="col-qty">اﻟﻜﻤﻴﺔ</th>
-        <th>ﺳﻌﺮࢫ</th>
-        <th>اﻟﻮﺣﺪة</th>
-        <th colspan="2">اﻟـﻤﺒـﻠﻎ</th>
     </tr>
     </thead>
     <tbody>
@@ -299,7 +290,7 @@
             <td class="col-sl">{{ $index + 1 }}</td>
             <td class="td-desc">{{ $item->product_name }}</td>
             <td class="col-qty">{{ $item->quantity }}</td>
-            <td colspan="2" class="col-unit">{{ number_format((float) $item->unit_price, 2) }}</td>
+            <td class="col-unit">{{ number_format((float) $item->unit_price, 2) }}</td>
             <td class="col-dhs">{{ $dhs }}</td>
             <td class="col-fils">{{ str_pad((string) $fils, 2, '0', STR_PAD_LEFT) }}</td>
         </tr>
@@ -309,13 +300,13 @@
             <td class="col-sl">&nbsp;</td>
             <td class="td-desc">&nbsp;</td>
             <td class="col-qty">&nbsp;</td>
-            <td colspan="2" class="col-unit">&nbsp;</td>
+            <td class="col-unit">&nbsp;</td>
             <td class="col-dhs">&nbsp;</td>
             <td class="col-fils">&nbsp;</td>
         </tr>
     @endfor
     <tr class="total-row">
-        <td colspan="5" class="td-total-label">Total</td>
+        <td colspan="4" class="td-total-label">Total</td>
         <td class="col-dhs">{{ $totalDhsFils[0] }}</td>
         <td class="col-fils">{{ str_pad((string) $totalDhsFils[1], 2, '0', STR_PAD_LEFT) }}</td>
     </tr>
@@ -335,15 +326,18 @@
 <table class="sig-table">
     <tr>
         <td class="sig-left">
-            <strong>Receiver&rsquo;s Name &amp; Signature</strong>
-        </td>
-        <td class="sig-right">
-            For AL BARSHA DOCUMENTS TYPING &amp; COPYING
+            <strong>Staff Name &amp; Signature</strong><br>
+            @if(!empty($staff?->name))
+                <span class="staff-name">{{ $staff->name }}</span>
+            @endif
             @if(!empty($staff?->signature))
                 <div class="staff-sig">
                     <img src="{{ public_path('storage/'.$staff->signature) }}" alt="">
                 </div>
             @endif
+        </td>
+        <td class="sig-right">
+            For AL BARSHA DOCUMENTS TYPING &amp; COPYING
         </td>
     </tr>
 </table>
@@ -352,6 +346,8 @@
     Tel: +971 6 5541118, P.O.Box 31864, Butina, Tasheel Center, Sharjah - U.A.E.<br>
     E-mail: albarshatyping333@gmail.com
 </div>
+
+</div>{{-- .document-frame --}}
 
 </div>
 </body>
