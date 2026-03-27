@@ -1,13 +1,5 @@
-# Stage 1 - Build Frontend (Vite)
-FROM node:18 AS frontend
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-# Stage 2 - Backend (Laravel + PHP + Composer)
-FROM php:8.2-fpm AS backend
+# Laravel API + PHP-FPM (no Vite/npm: React is hosted separately)
+FROM php:8.2-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -21,9 +13,6 @@ WORKDIR /var/www
 
 # Copy app files
 COPY . .
-
-# Copy built frontend from Stage 1
-COPY --from=frontend /app/public/dist ./public/dist
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
