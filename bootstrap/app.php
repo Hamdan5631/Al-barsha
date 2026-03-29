@@ -19,14 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Throwable $e, Request $request) {
-            if (! $request->is('api/*')) {
-                return null;
-            }
-
-            $status = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
-
+    
             return response()->json([
-                'message' => $status === 500 ? 'Server error.' : $e->getMessage(),
-            ], $status);
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ], 500);
+    
         });
     })->create();
