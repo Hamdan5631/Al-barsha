@@ -16,7 +16,28 @@ class InvoiceService
 
     public function list(array $filters, int $perPage = 10): LengthAwarePaginator
     {
-        return $this->invoiceRepository->paginateWithFilters($filters, $perPage);
+        $paginator = $this->invoiceRepository->paginateWithFilters($filters, $perPage);
+
+        foreach ($paginator->items() as $invoice) {
+            $this->ensurePdfExists($invoice);
+        }
+
+        return $paginator;
+    }
+
+    /**
+     * Generate and persist the PDF if missing or the file was removed from storage.
+     */
+    public function ensurePdfExists(Invoice $invoice): void
+    {
+        $invoice->loadMissing(['items', 'staff']);
+
+        if ($invoice->pdf_path && Storage::disk('public')->exists($invoice->pdf_path)) {
+            return;
+        }
+
+        $path = $this->generatePdf($invoice);
+        $invoice->update(['pdf_path' => $path]);
     }
 
     public function create(array $data): Invoice
@@ -29,6 +50,40 @@ class InvoiceService
                 'staff_id' => $data['staff_id'],
                 'total_amount' => 0,
             ]);
+
+            $totalAmount = 0;
+            foreach ($data['items'] as $item) {
+                $totalPrice = $item['quantity'] * $item['unit_price'];
+                $totalAmount += $totalPrice;
+
+                $invoice->items()->create([
+                    'product_name' => $item['product_name'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'total_price' => $totalPrice,
+                ]);
+            }
+
+            $invoice->update(['total_amount' => $totalAmount]);
+            $invoice->load(['items', 'staff']);
+
+            $pdfPath = $this->generatePdf($invoice);
+            $invoice->update(['pdf_path' => $pdfPath]);
+
+            return $invoice->fresh(['items', 'staff']);
+        });
+    }
+
+    public function update(Invoice $invoice, array $data): Invoice
+    {
+        return DB::transaction(function () use ($invoice, $data): Invoice {
+            $invoice->update([
+                'customer_name' => $data['customer_name'],
+                'date' => $data['date'],
+                'staff_id' => $data['staff_id'],
+            ]);
+
+            $invoice->items()->delete();
 
             $totalAmount = 0;
             foreach ($data['items'] as $item) {

@@ -13,6 +13,6 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::apiResource('staff', StaffController::class);
     Route::apiResource('customers', CustomerController::class);
-    Route::apiResource('invoices', InvoiceController::class)->only(['index', 'store', 'show']);
+    Route::apiResource('invoices', InvoiceController::class)->only(['index', 'store', 'show', 'update']);
     Route::get('/invoices/{invoice}/pdf', [InvoicePdfController::class, 'show'])->name('invoices.pdf.show');
 });

@@ -410,6 +410,42 @@
           }
         },
         {
+          "name": "Update Invoice",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_name\": \"John Updated\",\n  \"date\": \"2026-03-26\",\n  \"staff_id\": 1,\n  \"items\": [\n    {\n      \"product_name\": \"Typing Work\",\n      \"quantity\": 3,\n      \"unit_price\": 50\n    },\n    {\n      \"product_name\": \"Printing\",\n      \"quantity\": 2,\n      \"unit_price\": 10\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/invoices/{{invoice_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "invoices",
+                "{{invoice_id}}"
+              ]
+            },
+            "description": "Same JSON body as Create Invoice. Replaces all line items, recalculates total, and regenerates the PDF (invoice number unchanged)."
+          }
+        },
+        {
           "name": "Invoice PDF",
           "request": {
             "method": "GET",

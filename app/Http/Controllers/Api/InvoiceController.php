@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Invoice\StoreInvoiceRequest;
+use App\Http\Requests\Invoice\UpdateInvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 use App\Services\InvoiceService;
@@ -27,8 +28,16 @@ class InvoiceController extends Controller
         return new InvoiceResource($this->invoiceService->create($request->validated()));
     }
 
+    public function update(UpdateInvoiceRequest $request, Invoice $invoice): InvoiceResource
+    {
+        return new InvoiceResource($this->invoiceService->update($invoice, $request->validated()));
+    }
+
     public function show(Invoice $invoice): InvoiceResource
     {
-        return new InvoiceResource($invoice->load(['staff', 'items']));
+        $invoice->load(['staff', 'items']);
+        $this->invoiceService->ensurePdfExists($invoice);
+
+        return new InvoiceResource($invoice->fresh(['staff', 'items']));
     }
 }

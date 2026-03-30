@@ -22,7 +22,9 @@ class InvoiceResource extends JsonResource
             'staff_id' => $this->staff_id,
             'total_amount' => (float) $this->total_amount,
             'pdf_path' => $this->pdf_path,
-            'pdf_url' => $this->pdf_path ? route('invoices.pdf.show', $this->id) : null,
+            'pdf_url' => $this->pdf_path
+                ? asset('storage/'.ltrim($this->pdf_path, '/'))
+                : null,
             'staff' => new StaffResource($this->whenLoaded('staff')),
             'items' => InvoiceItemResource::collection($this->whenLoaded('items')),
             'created_at' => $this->created_at,
