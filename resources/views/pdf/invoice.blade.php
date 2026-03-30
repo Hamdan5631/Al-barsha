@@ -183,7 +183,7 @@
         .sig-left .staff-name {
             font-weight: normal;
             display: inline-block;
-            margin-top: 4px;
+            margin-top: 6px;
         }
         .sig-right {
             font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
@@ -192,7 +192,7 @@
             color: var(--pdf-navy);
             text-align: right;
         }
-        .staff-sig { margin-top: 6px; }
+        .staff-sig { margin-top: 4px; margin-bottom: 0; }
         .sig-left .staff-sig { text-align: left; }
         .sig-right .staff-sig { text-align: right; }
         .staff-sig img { max-width: 120px; height: auto; }
@@ -327,13 +327,13 @@
     <tr>
         <td class="sig-left">
             <strong>Staff Name &amp; Signature</strong><br>
-            @if(!empty($staff?->name))
-                <span class="staff-name">{{ $staff->name }}</span>
-            @endif
             @if(!empty($staff?->signature))
                 <div class="staff-sig">
                     <img src="{{ public_path('storage/'.$staff->signature) }}" alt="">
                 </div>
+            @endif
+            @if(!empty($staff?->name))
+                <span class="staff-name">{{ $staff->name }}</span>
             @endif
         </td>
         <td class="sig-right">

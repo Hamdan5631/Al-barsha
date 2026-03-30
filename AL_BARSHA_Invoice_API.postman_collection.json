@@ -446,6 +446,42 @@
           }
         },
         {
+          "name": "Bulk export invoices (ZIP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/zip"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"invoice_ids\": [1, 2, 3]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/invoices/bulk-export",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "invoices",
+                "bulk-export"
+              ]
+            },
+            "description": "Returns a ZIP of invoice PDFs (one file per invoice). PDFs are generated if missing. Max 200 IDs per request. Use Send and Download to save the file."
+          }
+        },
+        {
           "name": "Invoice PDF",
           "request": {
             "method": "GET",
