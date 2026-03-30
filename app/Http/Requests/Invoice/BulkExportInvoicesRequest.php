@@ -4,6 +4,7 @@ namespace App\Http\Requests\Invoice;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class BulkExportInvoicesRequest extends FormRequest
 {
@@ -21,8 +22,16 @@ class BulkExportInvoicesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'invoice_ids' => ['required', 'array', 'min:1', 'max:200'],
-            'invoice_ids.*' => ['integer', 'distinct', 'exists:invoices,id'],
+            'start_date' => ['sometimes', 'nullable', 'date'],
+            'end_date' => [
+                'sometimes',
+                'nullable',
+                'date',
+                Rule::when(
+                    fn () => $this->filled('start_date'),
+                    ['after_or_equal:start_date']
+                ),
+            ],
         ];
     }
 }

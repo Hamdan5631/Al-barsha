@@ -16,13 +16,27 @@ class InvoiceBulkExportController extends Controller
 
     public function __invoke(BulkExportInvoicesRequest $request): BinaryFileResponse
     {
-        $ids = $request->validated()['invoice_ids'];
+        $validated = $request->validated();
+        $startDate = $validated['start_date'] ?? null;
+        $endDate = $validated['end_date'] ?? null;
 
-        $invoices = Invoice::query()
-            ->whereIn('id', $ids)
-            ->get()
-            ->sortBy(fn (Invoice $invoice) => array_search($invoice->id, $ids, true))
-            ->values();
+        $query = Invoice::query()->orderBy('date')->orderBy('id');
+
+        if ($startDate) {
+            $query->whereDate('date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('date', '<=', $endDate);
+        } elseif ($startDate) {
+            $query->whereDate('date', '<=', now()->toDateString());
+        }
+
+        if (! $startDate && ! $endDate) {
+            $query->whereDate('date', '<=', now()->toDateString());
+        }
+
+        $invoices = $query->get();
 
         foreach ($invoices as $invoice) {
             $this->invoiceService->ensurePdfExists($invoice);

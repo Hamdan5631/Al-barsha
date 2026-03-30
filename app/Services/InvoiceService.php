@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Storage;
 
 class InvoiceService
 {
-    public function __construct(private readonly InvoiceRepository $invoiceRepository) {}
+    public function __construct(
+        private readonly InvoiceRepository $invoiceRepository,
+        private readonly SettingService $settingService) {}
 
     public function list(array $filters, int $perPage = 10): LengthAwarePaginator
     {
@@ -124,7 +126,11 @@ class InvoiceService
 
     private function generatePdf(Invoice $invoice): string
     {
-        $pdf = Pdf::loadView('pdf.invoice', ['invoice' => $invoice, 'staff' => $invoice->staff ?? Staff::find($invoice->staff_id)]);
+        $pdf = Pdf::loadView('pdf.invoice', [
+            'invoice' => $invoice,
+            'staff' => $invoice->staff ?? Staff::find($invoice->staff_id),
+            'settings' => $this->settingService->forInvoicePdf(),
+        ]);
         $fileName = 'invoices/'.$invoice->invoice_number.'.pdf';
 
         Storage::disk('public')->put($fileName, $pdf->output());

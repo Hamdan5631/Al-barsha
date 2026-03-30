@@ -197,6 +197,9 @@
         .sig-right .staff-sig { text-align: right; }
         .staff-sig img { max-width: 120px; height: auto; }
 
+        .company-stamp { margin-bottom: 6px; text-align: right; }
+        .company-stamp img { max-height: 72px; max-width: 140px; height: auto; }
+
         .footer-bar {
             margin-top: 0;
             background: var(--pdf-navy);
@@ -216,6 +219,14 @@
     $items = $invoice->items;
     $lineCount = max(18, $items->count());
     $totalDhsFils = \App\Support\AedMoney::splitDhsFils((float) $invoice->total_amount);
+    $settings = $settings ?? [
+        'company_stamp_image' => null,
+        'invoice_company_name' => 'AL BARSHA DOCUMENTS TYPING & COPYING',
+        'invoice_footer_line1' => 'Tel: +971 6 5541118, P.O.Box 31864, Butina, Tasheel Center, Sharjah - U.A.E.',
+        'invoice_footer_line2' => 'E-mail: albarshatyping333@gmail.com',
+    ];
+    $stampPath = $settings['company_stamp_image'] ?? null;
+    $stampFullPath = $stampPath ? public_path('storage/'.ltrim($stampPath, '/')) : null;
 @endphp
 
 <div class="watermark">Bdt</div>
@@ -337,14 +348,19 @@
             @endif
         </td>
         <td class="sig-right">
-            For AL BARSHA DOCUMENTS TYPING &amp; COPYING
+            @if($stampFullPath && file_exists($stampFullPath))
+                <div class="company-stamp">
+                    <img src="{{ str_replace('\\', '/', $stampFullPath) }}" alt="">
+                </div>
+            @endif
+            For {{ $settings['invoice_company_name'] }}
         </td>
     </tr>
 </table>
 
 <div class="footer-bar">
-    Tel: +971 6 5541118, P.O.Box 31864, Butina, Tasheel Center, Sharjah - U.A.E.<br>
-    E-mail: albarshatyping333@gmail.com
+    {{ $settings['invoice_footer_line1'] }}<br>
+    {{ $settings['invoice_footer_line2'] }}
 </div>
 
 </div>{{-- .document-frame --}}

@@ -88,6 +88,115 @@
       ]
     },
     {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Get settings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/settings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "settings"
+              ]
+            },
+            "description": "Key-value pairs. company_stamp_image is storage path; company_stamp_url is derived for display."
+          }
+        },
+        {
+          "name": "Update settings (JSON)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"invoice_company_name\": \"AL BARSHA DOCUMENTS TYPING & COPYING\",\n  \"invoice_footer_line1\": \"Tel: +971 6 5541118, P.O.Box 31864, Butina, Tasheel Center, Sharjah - U.A.E.\",\n  \"invoice_footer_line2\": \"E-mail: albarshatyping333@gmail.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/settings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "settings"
+              ]
+            },
+            "description": "Partial update: only include keys present. Regenerate invoice PDFs (e.g. update invoice) to refresh old files."
+          }
+        },
+        {
+          "name": "Upload company stamp (multipart)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "company_stamp",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "remove_company_stamp",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/settings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "settings"
+              ]
+            },
+            "description": "Set company_stamp image. Use remove_company_stamp=true (text) to remove stored stamp."
+          }
+        }
+      ]
+    },
+    {
       "name": "Staff",
       "item": [
         {
@@ -465,7 +574,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"invoice_ids\": [1, 2, 3]\n}"
+              "raw": "{}"
             },
             "url": {
               "raw": "{{base_url}}/api/invoices/bulk-export",
@@ -478,7 +587,7 @@
                 "bulk-export"
               ]
             },
-            "description": "Returns a ZIP of invoice PDFs (one file per invoice). PDFs are generated if missing. Max 200 IDs per request. Use Send and Download to save the file."
+            "description": "Returns a ZIP of invoice PDFs (one file per invoice). PDFs are generated if missing. Optional JSON body: start_date and/or end_date (Y-m-d) filter on invoice date. Omit both to export all invoices with date on or before today. Omit end_date only: from start_date through today. Use Send and Download to save the file."
           }
         },
         {
