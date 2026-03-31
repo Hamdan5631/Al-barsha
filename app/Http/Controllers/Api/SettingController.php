@@ -23,9 +23,9 @@ class SettingController extends Controller
     {
         $validated = $request->validated();
 
-        // if ($request->boolean('remove_company_stamp')) {
-        //     $this->settingService->clearCompanyStamp();
-        // }
+        if ($request->boolean('remove_company_stamp')) {
+            $this->settingService->clearCompanyStamp();
+        }
 
         $companyStampFile = $request->file('company_stamp') ?? $request->file('company_stamp_url');
         if ($companyStampFile) {
