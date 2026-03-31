@@ -337,7 +337,6 @@
 <table class="sig-table">
     <tr>
         <td class="sig-left">
-            <strong>Staff Name &amp; Signature</strong><br>
             @if(!empty($staff?->signature))
                 <div class="staff-sig">
                     <img src="{{ public_path('storage/'.$staff->signature) }}" alt="">
@@ -346,6 +345,7 @@
             @if(!empty($staff?->name))
                 <span class="staff-name">{{ $staff->name }}</span>
             @endif
+            <br><strong>Staff Name &amp; Signature</strong>
         </td>
         <td class="sig-right">
             @if($stampFullPath && file_exists($stampFullPath))

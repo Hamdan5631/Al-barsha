@@ -27,8 +27,9 @@ class SettingController extends Controller
             $this->settingService->clearCompanyStamp();
         }
 
-        if ($request->hasFile('company_stamp_url')) {
-            $this->settingService->storeCompanyStamp($request->file('company_stamp_url'));
+        $companyStampFile = $request->file('company_stamp') ?? $request->file('company_stamp_url');
+        if ($companyStampFile) {
+            $this->settingService->storeCompanyStamp($companyStampFile);
         }
 
         $mapping = [
