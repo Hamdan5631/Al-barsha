@@ -27,7 +27,10 @@
         * { box-sizing: border-box; }
         html, body {
             border: 0 !important;
+            border-left: 0 !important;
+            border-right: 0 !important;
             outline: none !important;
+            box-shadow: none !important;
         }
         img {
             border: 0 !important;
@@ -48,6 +51,7 @@
             margin: 0;
             line-height: 1.25;
             position: relative;
+            background: #fff;
         }
         .watermark {
             position: fixed;
@@ -63,11 +67,23 @@
             z-index: 0;
             pointer-events: none;
         }
-        .page-wrap { position: relative; z-index: 1; }
+        .page-wrap {
+            position: relative;
+            z-index: 1;
+            border: 0 !important;
+            border-left: 0 !important;
+            border-right: 0 !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
 
         .document-frame {
             border: 0 !important;
+            border-left: 0 !important;
+            border-right: 0 !important;
             outline: none !important;
+            box-shadow: none !important;
+            overflow-x: hidden;
         }
 
         .invoice-header {
@@ -77,27 +93,75 @@
             text-align: center;
             background: #fff;
             border: 0 !important;
+            border-left: 0 !important;
+            border-right: 0 !important;
             outline: none !important;
+            box-shadow: none !important;
             overflow: hidden;
         }
-        .invoice-header-img {
+        /* Clip ~2px per side: DomPDF sometimes draws hairlines at block edges; banner JPEGs often include thin edge strokes */
+        .invoice-header-crop {
+            overflow: hidden;
             width: 100%;
-            max-width: 100%;
-            height: auto;
-            display: block;
             margin: 0;
             padding: 0;
             border: 0 !important;
             outline: none !important;
+            line-height: 0;
+        }
+        /* Extra width on the right — banner JPEG / DomPDF often leave a hairline only on that edge */
+        .invoice-header-img {
+            width: calc(100% + 10px);
+            max-width: none;
+            height: auto;
+            display: block;
+            margin: 0 0 0 -2px;
+            padding: 0;
+            border: 0 !important;
+            outline: none !important;
+            box-shadow: none !important;
             vertical-align: top;
             object-fit: contain;
+        }
+        /* One block for banner + meta: clip any vertical artefact along the right edge */
+        .invoice-top {
+            overflow: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0 !important;
+            border-left: 0 !important;
+            border-right: 0 !important;
+            outline: none !important;
+            box-shadow: none !important;
         }
         .meta-strip {
             background: var(--pdf-pale);
             padding: 8px 10px 10px;
+            border: 0 !important;
+            border-left: 0 !important;
+            border-right: 0 !important;
+            outline: none !important;
+            box-shadow: none !important;
+            overflow: hidden;
         }
-        .meta-inner { width: 100%; border-collapse: collapse; }
-        .meta-inner td { vertical-align: middle; padding: 0; }
+        table.meta-inner {
+            width: 100%;
+            border-collapse: collapse !important;
+            border-spacing: 0 !important;
+            border: 0 !important;
+            border-width: 0 !important;
+            outline: none !important;
+            table-layout: fixed;
+        }
+        .meta-inner td,
+        .meta-inner th {
+            border: 0 !important;
+            border-width: 0 !important;
+            outline: none !important;
+            vertical-align: middle;
+            padding: 0;
+        }
         .meta-inner tr + tr td { padding-top: 6px; }
         .meta-label { font-weight: bold; color: var(--pdf-navy); }
         .meta-to-val { padding-left: 4px; }
@@ -123,11 +187,14 @@
             text-align: center;
         }
         /* DomPDF: avoid nested tables & display:block in th — use <br> + inline spans */
+        /* Shaped via ArabicPdfText::forDomPdf — display as LTR string (DomPDF has no real RTL) */
         .items-table thead .th-ar {
             font-family: var(--font-ar);
             font-size: 8px;
             color: #ffffff !important;
             font-weight: bold;
+            direction: ltr;
+            unicode-bidi: embed;
         }
         .items-table thead .th-en {
             font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
@@ -146,7 +213,12 @@
             color: var(--pdf-navy);
             min-height: 14px;
         }
-        .items-table tbody td.td-desc { text-align: left; }
+        .items-table tbody td.td-desc {
+            text-align: left;
+            direction: ltr;
+            unicode-bidi: plaintext;
+            font-family: var(--font-ar), DejaVu Sans, Helvetica, Arial, sans-serif;
+        }
         .items-table tbody tr.total-row td {
             font-weight: bold;
             background: var(--pdf-pale);
@@ -234,9 +306,12 @@
 
 <div class="document-frame">
 
+<div class="invoice-top">
 @if(file_exists(public_path('barshalogo.jpeg')))
 <div class="invoice-header">
-    <img src="{{ $invoiceHeaderImage }}" alt="AL BARSHA DOCUMENTS TYPING &amp; COPYING" class="invoice-header-img">
+    <div class="invoice-header-crop">
+        <img src="{{ $invoiceHeaderImage }}" alt="AL BARSHA DOCUMENTS TYPING &amp; COPYING" class="invoice-header-img">
+    </div>
 </div>
 @else
 <div class="invoice-header" style="font-weight:bold;font-size:11px;color:#184272;padding:8px;">AL BARSHA DOCUMENTS TYPING &amp; COPYING</div>
@@ -246,7 +321,7 @@
     <table class="meta-inner">
         <tr>
             <td colspan="2">
-                <span class="meta-label">To:</span><span class="meta-to-val">{{ $invoice->customer_name }}</span>
+                <span class="meta-label">To:</span><span class="meta-to-val">{{ \App\Support\ArabicPdfText::forDomPdf($invoice->customer_name) }}</span>
             </td>
         </tr>
         <tr>
@@ -261,29 +336,30 @@
         </tr>
     </table>
 </div>
+</div>{{-- .invoice-top --}}
 
 <div class="items-wrap">
 <table class="items-table">
     <thead>
     <tr>
         <th rowspan="2" class="col-sl">
-            <span class="th-ar" dir="rtl">الرقم</span><br>
+            <span class="th-ar">{{ \App\Support\ArabicPdfText::forDomPdf('الرقم') }}</span><br>
             <span class="th-en">SI No.</span>
         </th>
         <th rowspan="2" class="col-desc">
-            <span class="th-ar" dir="rtl">التفاصيل</span><br>
+            <span class="th-ar">{{ \App\Support\ArabicPdfText::forDomPdf('التفاصيل') }}</span><br>
             <span class="th-en">Description</span>
         </th>
         <th rowspan="2" class="col-qty">
-            <span class="th-ar" dir="rtl">الكمية</span><br>
+            <span class="th-ar">{{ \App\Support\ArabicPdfText::forDomPdf('الكمية') }}</span><br>
             <span class="th-en">Qty.</span>
         </th>
         <th rowspan="2" class="col-unit">
-            <span class="th-ar" dir="rtl">سعر الوحدة</span><br>
+            <span class="th-ar">{{ \App\Support\ArabicPdfText::forDomPdf('سعر الوحدة') }}</span><br>
             <span class="th-en">Unit Price (AED)</span>
         </th>
         <th colspan="2">
-            <span class="th-ar" dir="rtl">المبلغ</span><br>
+            <span class="th-ar">{{ \App\Support\ArabicPdfText::forDomPdf('المبلغ') }}</span><br>
             <span class="th-en">Amount</span>
         </th>
     </tr>
@@ -299,7 +375,7 @@
         @endphp
         <tr>
             <td class="col-sl">{{ $index + 1 }}</td>
-            <td class="td-desc">{{ $item->product_name }}</td>
+            <td class="td-desc">{{ \App\Support\ArabicPdfText::forDomPdf($item->product_name) }}</td>
             <td class="col-qty">{{ $item->quantity }}</td>
             <td class="col-unit">{{ number_format((float) $item->unit_price, 2) }}</td>
             <td class="col-dhs">{{ $dhs }}</td>
