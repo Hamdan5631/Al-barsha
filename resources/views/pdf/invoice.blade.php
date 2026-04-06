@@ -2,7 +2,7 @@
     $fontArabicRegular = str_replace('\\', '/', storage_path('fonts/NotoSansArabic-Regular.ttf'));
     $fontArabicBold = str_replace('\\', '/', storage_path('fonts/NotoSansArabic-Bold.ttf'));
     $invoiceHeaderImage = str_replace('\\', '/', public_path('barshalogo.jpeg'));
-    $watermarkImage = str_replace('\\', '/', public_path('albarsha-watermark.jpeg'));
+    $watermarkImage = str_replace('\\', '/', public_path('albarsha-watermark.png'));
 @endphp
 <!DOCTYPE html>
 <html lang="en">
