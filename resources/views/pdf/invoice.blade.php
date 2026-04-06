@@ -314,7 +314,7 @@
     $stampFullPath = $stampPath ? public_path('storage/'.ltrim($stampPath, '/')) : null;
 @endphp
 
-@if(file_exists(public_path('albarsha-watermark.jpeg')))
+@if(file_exists(public_path('albarsha-watermark.png')))
 <div class="watermark"><img src="{{ $watermarkImage }}" alt=""></div>
 @else
 <div class="watermark"><span class="watermark-text">Bdt</span></div>
