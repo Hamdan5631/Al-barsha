@@ -2,6 +2,7 @@
     $fontArabicRegular = str_replace('\\', '/', storage_path('fonts/NotoSansArabic-Regular.ttf'));
     $fontArabicBold = str_replace('\\', '/', storage_path('fonts/NotoSansArabic-Bold.ttf'));
     $invoiceHeaderImage = str_replace('\\', '/', public_path('barshalogo.jpeg'));
+    $watermarkImage = str_replace('\\', '/', public_path('albarsha-watermark.jpeg'));
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -59,13 +60,25 @@
             right: 0;
             top: 38%;
             text-align: center;
+            opacity: 0.35;
+            z-index: 0;
+            pointer-events: none;
+            line-height: 0;
+        }
+        .watermark-text {
             font-family: DejaVu Serif, Georgia, serif;
             font-size: 100px;
             font-style: italic;
             color: #c5cad1;
-            opacity: 0.35;
-            z-index: 0;
-            pointer-events: none;
+            line-height: 1;
+        }
+        .watermark img {
+            max-width: 340px;
+            max-height: 240px;
+            width: auto;
+            height: auto;
+            display: inline-block;
+            vertical-align: middle;
         }
         .page-wrap {
             position: relative;
@@ -270,7 +283,7 @@
         .staff-sig img { max-width: 120px; height: auto; }
 
         .company-stamp { margin-bottom: 6px; text-align: right; }
-        .company-stamp img { max-height: 72px; max-width: 140px; height: auto; }
+        .company-stamp img { max-height: 110px; max-width: 220px; height: auto; width: auto; }
 
         .footer-bar {
             margin-top: 0;
@@ -301,7 +314,11 @@
     $stampFullPath = $stampPath ? public_path('storage/'.ltrim($stampPath, '/')) : null;
 @endphp
 
-<div class="watermark">Bdt</div>
+@if(file_exists(public_path('albarsha-watermark.jpeg')))
+<div class="watermark"><img src="{{ $watermarkImage }}" alt=""></div>
+@else
+<div class="watermark"><span class="watermark-text">Bdt</span></div>
+@endif
 <div class="page-wrap">
 
 <div class="document-frame">
