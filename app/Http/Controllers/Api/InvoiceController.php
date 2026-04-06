@@ -8,6 +8,7 @@ use App\Http\Requests\Invoice\UpdateInvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 use App\Services\InvoiceService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class InvoiceController extends Controller
@@ -39,5 +40,12 @@ class InvoiceController extends Controller
         $this->invoiceService->ensurePdfExists($invoice);
 
         return new InvoiceResource($invoice->fresh(['staff', 'items']));
+    }
+
+    public function destroy(Invoice $invoice): JsonResponse
+    {
+        $this->invoiceService->delete($invoice);
+
+        return response()->json(['message' => 'Invoice deleted successfully.']);
     }
 }

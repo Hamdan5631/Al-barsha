@@ -110,6 +110,18 @@ class InvoiceService
         });
     }
 
+    public function delete(Invoice $invoice): void
+    {
+        DB::transaction(function () use ($invoice): void {
+            $pdfPath = $invoice->pdf_path;
+            $invoice->delete();
+
+            if ($pdfPath && Storage::disk('public')->exists($pdfPath)) {
+                Storage::disk('public')->delete($pdfPath);
+            }
+        });
+    }
+
     private function generateInvoiceNumber(): string
     {
         $prefix = 'INV-'.now()->format('Ymd');

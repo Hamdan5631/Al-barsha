@@ -18,6 +18,6 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::apiResource('staff', StaffController::class);
     Route::apiResource('customers', CustomerController::class);
     Route::post('/invoices/bulk-export', InvoiceBulkExportController::class);
-    Route::apiResource('invoices', InvoiceController::class)->only(['index', 'store', 'show', 'update']);
+    Route::apiResource('invoices', InvoiceController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
     Route::get('/invoices/{invoice}/pdf', [InvoicePdfController::class, 'show'])->name('invoices.pdf.show');
 });
