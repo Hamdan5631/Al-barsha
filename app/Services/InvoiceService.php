@@ -131,9 +131,13 @@ class InvoiceService
             ->latest('id')
             ->first();
 
-        $sequence = $last ? ((int) substr($last->invoice_number, -4)) + 1 : 1;
+        $lastSequence = 0;
+        if ($last && preg_match('/-(\d+)$/', $last->invoice_number, $matches) === 1) {
+            $lastSequence = (int) $matches[1];
+        }
+        $sequence = max($lastSequence + 1, 200);
 
-        return sprintf('%s-%04d', $prefix, $sequence);
+        return sprintf('%s-%d', $prefix, $sequence);
     }
 
     private function generatePdf(Invoice $invoice): string
