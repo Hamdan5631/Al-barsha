@@ -179,6 +179,7 @@
         .meta-label { font-weight: bold; color: var(--pdf-navy); }
         .meta-to-val { padding-left: 4px; }
         .meta-right { text-align: right; white-space: nowrap; }
+        .dynamic-content { font-size: calc(1em + 3px); }
 
         .items-table {
             width: 100%;
@@ -338,17 +339,17 @@
     <table class="meta-inner">
         <tr>
             <td colspan="2">
-                <span class="meta-label">To:</span><span class="meta-to-val">{{ \App\Support\ArabicPdfText::forDomPdf($invoice->customer_name) }}</span>
+                <span class="meta-label">To:</span><span class="meta-to-val dynamic-content">{{ \App\Support\ArabicPdfText::forDomPdf($invoice->customer_name) }}</span>
             </td>
         </tr>
         <tr>
             <td>
                 <span class="meta-label">Invoice No:</span>
-                {{ $invoice->invoice_number }}
+                <span class="dynamic-content">{{ $invoice->invoice_number }}</span>
             </td>
             <td class="meta-right">
                 <span class="meta-label">Date:</span>
-                {{ $invoiceDate }}
+                <span class="dynamic-content">{{ $invoiceDate }}</span>
             </td>
         </tr>
     </table>
@@ -391,12 +392,12 @@
             [$dhs, $fils] = \App\Support\AedMoney::splitDhsFils((float) $item->total_price);
         @endphp
         <tr>
-            <td class="col-sl">{{ $index + 1 }}</td>
-            <td class="td-desc">{{ \App\Support\ArabicPdfText::forDomPdf($item->product_name) }}</td>
-            <td class="col-qty">{{ $item->quantity }}</td>
-            <td class="col-unit">{{ number_format((float) $item->unit_price, 2) }}</td>
-            <td class="col-dhs">{{ $dhs }}</td>
-            <td class="col-fils">{{ str_pad((string) $fils, 2, '0', STR_PAD_LEFT) }}</td>
+            <td class="col-sl dynamic-content">{{ $index + 1 }}</td>
+            <td class="td-desc dynamic-content">{{ \App\Support\ArabicPdfText::forDomPdf($item->product_name) }}</td>
+            <td class="col-qty dynamic-content">{{ $item->quantity }}</td>
+            <td class="col-unit dynamic-content">{{ number_format((float) $item->unit_price, 2) }}</td>
+            <td class="col-dhs dynamic-content">{{ $dhs }}</td>
+            <td class="col-fils dynamic-content">{{ str_pad((string) $fils, 2, '0', STR_PAD_LEFT) }}</td>
         </tr>
     @endforeach
     @for($i = $items->count(); $i < $lineCount; $i++)
@@ -411,8 +412,8 @@
     @endfor
     <tr class="total-row">
         <td colspan="4" class="td-total-label">Total</td>
-        <td class="col-dhs">{{ $totalDhsFils[0] }}</td>
-        <td class="col-fils">{{ str_pad((string) $totalDhsFils[1], 2, '0', STR_PAD_LEFT) }}</td>
+        <td class="col-dhs dynamic-content">{{ $totalDhsFils[0] }}</td>
+        <td class="col-fils dynamic-content">{{ str_pad((string) $totalDhsFils[1], 2, '0', STR_PAD_LEFT) }}</td>
     </tr>
     </tbody>
 </table>
@@ -422,7 +423,7 @@
     <table class="words-row">
         <tr>
             <td class="words-label">Total Amount in words:</td>
-            <td class="words-val">{{ \App\Support\AedMoney::inWords((float) $invoice->total_amount) }}</td>
+            <td class="words-val dynamic-content">{{ \App\Support\AedMoney::inWords((float) $invoice->total_amount) }}</td>
         </tr>
     </table>
 </div>
@@ -436,7 +437,7 @@
                 </div>
             @endif
             @if(!empty($staff?->name))
-                <span class="staff-name">{{ $staff->name }}</span>
+                <span class="staff-name dynamic-content">{{ $staff->name }}</span>
             @endif
             <br><strong>Staff Name &amp; Signature</strong>
         </td>
@@ -446,14 +447,14 @@
                     <img src="{{ str_replace('\\', '/', $stampFullPath) }}" alt="">
                 </div>
             @endif
-            For {{ $settings['invoice_company_name'] }}
+            <span class="dynamic-content">For {{ $settings['invoice_company_name'] }}</span>
         </td>
     </tr>
 </table>
 
 <div class="footer-bar">
-    {{ $settings['invoice_footer_line1'] }}<br>
-    {{ $settings['invoice_footer_line2'] }}
+    <span class="dynamic-content">{{ $settings['invoice_footer_line1'] }}</span><br>
+    <span class="dynamic-content">{{ $settings['invoice_footer_line2'] }}</span>
 </div>
 
 </div>{{-- .document-frame --}}
