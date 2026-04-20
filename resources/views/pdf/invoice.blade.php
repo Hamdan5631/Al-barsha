@@ -176,7 +176,7 @@
             padding: 0;
         }
         .meta-inner tr + tr td { padding-top: 6px; }
-        .meta-label { font-weight: bold; color: var(--pdf-navy); }
+        .meta-label { font-weight: bold; color: var(--pdf-navy); font-size: calc(1em + 3px); }
         .meta-to-val { padding-left: 4px; }
         .meta-right { text-align: right; white-space: nowrap; }
         .dynamic-content { font-size: calc(1em + 3px); }
@@ -204,7 +204,7 @@
         /* Shaped via ArabicPdfText::forDomPdf — display as LTR string (DomPDF has no real RTL) */
         .items-table thead .th-ar {
             font-family: var(--font-ar);
-            font-size: 8px;
+            font-size: 11px;
             color: #ffffff !important;
             font-weight: bold;
             direction: ltr;
@@ -212,12 +212,12 @@
         }
         .items-table thead .th-en {
             font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
-            font-size: 7.5px;
+            font-size: 10.5px;
             color: #ffffff !important;
             font-weight: bold;
         }
         .items-table thead tr.head-sub th {
-            font-size: 7.5px;
+            font-size: 10.5px;
             text-align: center;
             padding: 4px 2px;
             color: #ffffff !important;
@@ -241,6 +241,7 @@
         .items-table tbody tr.total-row .td-total-label {
             text-align: right;
             padding-right: 8px;
+            font-size: calc(1em + 3px);
         }
         .col-sl { width: 5%; }
         .col-desc { width: 38%; }
@@ -255,14 +256,14 @@
         }
         .words-row { width: 100%; border-collapse: collapse; }
         .words-row td { vertical-align: top; padding: 2px 0; }
-        .words-label { font-weight: bold; width: 22%; color: var(--pdf-navy); }
+        .words-label { font-weight: bold; width: 22%; color: var(--pdf-navy); font-size: calc(1em + 3px); }
         .words-val { font-style: italic; font-size: 8.5px; }
 
         .sig-table { width: 100%; border-collapse: collapse; margin-top: 12px; padding: 0 8px 10px; }
         .sig-table td { vertical-align: bottom; padding: 4px 2px; width: 50%; }
         .sig-left {
             font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
-            font-size: 9px;
+            font-size: 12px;
             font-weight: bold;
             color: var(--pdf-navy);
         }
@@ -273,7 +274,7 @@
         }
         .sig-right {
             font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
-            font-size: 9px;
+            font-size: 12px;
             font-weight: bold;
             color: var(--pdf-navy);
             text-align: right;
