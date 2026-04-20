@@ -453,8 +453,8 @@
 </table>
 
 <div class="footer-bar">
-    <span class="dynamic-content">{{ $settings['invoice_footer_line1'] }}</span><br>
-    <span class="dynamic-content">{{ $settings['invoice_footer_line2'] }}</span>
+    <span class="">{{ $settings['invoice_footer_line1'] }}</span><br>
+    <span class="">{{ $settings['invoice_footer_line2'] }}</span>
 </div>
 
 </div>{{-- .document-frame --}}
