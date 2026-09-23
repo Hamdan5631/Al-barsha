@@ -11,7 +11,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Quotation {{ $quotation->quotation_number }}</title>
     <style>
-        /* Colours from AL BARSHA.pdf: body text rgb(24,66,114) #184272; muted fill #bfc0bf (PyMuPDF) */
+        /* Quotation document theme: black text, header, and footer. */
         @font-face {
             font-family: 'NotoSansArabic';
             font-style: normal;
@@ -39,10 +39,10 @@
             box-shadow: none !important;
         }
         :root {
-            --pdf-navy: #184272;
-            --pdf-muted: #bfc0bf;
-            --pdf-border: #bfc0bf;
-            --pdf-pale: #e8e9e8;
+            --pdf-navy: #111111;
+            --pdf-muted: #d4d4d4;
+            --pdf-border: #d4d4d4;
+            --pdf-pale: #f4f4f4;
             --font-ar: 'NotoSansArabic', 'DejaVu Sans', sans-serif;
         }
         body {
@@ -192,7 +192,7 @@
             vertical-align: middle;
         }
         .items-table thead th {
-            background-color: #184272 !important;
+            background-color: #111111 !important;
             color: #ffffff !important;
             font-weight: bold;
             border: 1px solid #ffffff;
@@ -323,14 +323,14 @@
 <div class="document-frame">
 
 <div class="invoice-top">
-@if(file_exists(public_path('barshalogo.jpeg')))
+@if(file_exists(public_path('barshalogo_quotation.jpeg')))
 <div class="invoice-header">
     <div class="invoice-header-crop">
         <img src="{{ $invoiceHeaderImage }}" alt="AL BARSHA DOCUMENTS TYPING &amp; COPYING" class="invoice-header-img">
     </div>
 </div>
 @else
-<div class="invoice-header" style="font-weight:bold;font-size:11px;color:#184272;padding:8px;">AL BARSHA DOCUMENTS TYPING &amp; COPYING</div>
+<div class="invoice-header" style="font-weight:bold;font-size:11px;color:#111111;padding:8px;">AL BARSHA DOCUMENTS TYPING &amp; COPYING</div>
 @endif
 
 <div class="meta-strip">
