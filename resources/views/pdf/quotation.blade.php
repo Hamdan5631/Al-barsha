@@ -311,8 +311,6 @@
         'invoice_footer_line1' => 'Tel: +971 6 5541118, P.O.Box 31864, Butina, Tasheel Center, Sharjah - U.A.E.',
         'invoice_footer_line2' => 'E-mail: albarshatyping333@gmail.com',
     ];
-    $stampPath = $settings['company_stamp_image'] ?? null;
-    $stampFullPath = $stampPath ? public_path('storage/'.ltrim($stampPath, '/')) : null;
 @endphp
 
 @if(file_exists(public_path('albarsha-watermark.png')))
@@ -441,14 +439,7 @@
             @endif
             <br><strong>Staff Name &amp; Signature</strong>
         </td>
-        <td class="sig-right">
-            @if($stampFullPath && file_exists($stampFullPath))
-                <div class="company-stamp">
-                    <img src="{{ str_replace('\\', '/', $stampFullPath) }}" alt="">
-                </div>
-            @endif
-            <span class="dynamic-content">For {{ $settings['invoice_company_name'] }}</span>
-        </td>
+        <td class="sig-right"></td>
     </tr>
 </table>
 
