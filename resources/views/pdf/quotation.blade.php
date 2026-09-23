@@ -11,7 +11,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Quotation {{ $quotation->quotation_number }}</title>
     <style>
-        /* Quotation document theme: black text, header, and footer. */
+        /* Quotation document theme: #066b65 text, header, and footer. */
         @font-face {
             font-family: 'NotoSansArabic';
             font-style: normal;
@@ -39,10 +39,10 @@
             box-shadow: none !important;
         }
         :root {
-            --pdf-navy: #111111;
-            --pdf-muted: #d4d4d4;
-            --pdf-border: #d4d4d4;
-            --pdf-pale: #f4f4f4;
+            --pdf-navy: #066b65;
+            --pdf-muted: #b7d6d3;
+            --pdf-border: #b7d6d3;
+            --pdf-pale: #e6f3f2;
             --font-ar: 'NotoSansArabic', 'DejaVu Sans', sans-serif;
         }
         body {
@@ -192,7 +192,7 @@
             vertical-align: middle;
         }
         .items-table thead th {
-            background-color: #111111 !important;
+            background-color: #066b65 !important;
             color: #ffffff !important;
             font-weight: bold;
             border: 1px solid #ffffff;
@@ -330,7 +330,7 @@
     </div>
 </div>
 @else
-<div class="invoice-header" style="font-weight:bold;font-size:11px;color:#111111;padding:8px;">AL BARSHA DOCUMENTS TYPING &amp; COPYING</div>
+<div class="invoice-header" style="font-weight:bold;font-size:11px;color:#066b65;padding:8px;">AL BARSHA DOCUMENTS TYPING &amp; COPYING</div>
 @endif
 
 <div class="meta-strip">
