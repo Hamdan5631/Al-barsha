@@ -615,6 +615,222 @@
           }
         }
       ]
+    },
+    {
+      "name": "Quotations",
+      "item": [
+        {
+          "name": "Create Quotation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_name\": \"John\",\n  \"date\": \"2026-03-25\",\n  \"staff_id\": 1,\n  \"items\": [\n    {\n      \"product_name\": \"Typing Work\",\n      \"quantity\": 2,\n      \"unit_price\": 50\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/quotations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "quotations"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('quotation_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Quotations (paginated + filters)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/quotations?quotation_number=&customer_name=&date=",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "quotations"
+              ],
+              "query": [
+                {
+                  "key": "quotation_number",
+                  "value": ""
+                },
+                {
+                  "key": "customer_name",
+                  "value": ""
+                },
+                {
+                  "key": "date",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Quotation Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/quotations/{{quotation_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "quotations",
+                "{{quotation_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Quotation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_name\": \"John Updated\",\n  \"date\": \"2026-03-26\",\n  \"staff_id\": 1,\n  \"items\": [\n    {\n      \"product_name\": \"Typing Work\",\n      \"quantity\": 3,\n      \"unit_price\": 50\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/quotations/{{quotation_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "quotations",
+                "{{quotation_id}}"
+              ]
+            },
+            "description": "Same JSON body as Create Quotation. Replaces all line items, recalculates total, and regenerates the PDF (quotation number unchanged)."
+          }
+        },
+        {
+          "name": "Bulk export quotations (ZIP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/zip"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/quotations/bulk-export",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "quotations",
+                "bulk-export"
+              ]
+            },
+            "description": "Returns a ZIP of quotation PDFs. Optional JSON body: start_date and/or end_date (Y-m-d) filter on quotation date."
+          }
+        },
+        {
+          "name": "Quotation PDF",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/quotations/{{quotation_id}}/pdf",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "quotations",
+                "{{quotation_id}}",
+                "pdf"
+              ]
+            }
+          }
+        }
+      ]
     }
   ],
   "variable": [
@@ -632,6 +848,10 @@
     },
     {
       "key": "invoice_id",
+      "value": "1"
+    },
+    {
+      "key": "quotation_id",
       "value": "1"
     }
   ]
